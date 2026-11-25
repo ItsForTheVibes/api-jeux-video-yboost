@@ -1,7 +1,6 @@
 import * as gameRepository from '../repositories/game.repository.js';
 import type {Game, CreateGameInput} from '../models/game.model.js';
 
-// Erreur qui porte un code HTTP. app.ts la transforme en réponse JSON.
 export class HttpError extends Error {
     status: number;
     details?: string[];
@@ -18,7 +17,6 @@ function notFound(): HttpError {
     return new HttpError(404, 'Jeu introuvable');
 }
 
-// req.params.id est un texte : on vérifie que c'est un entier strictement positif.
 function parseId(rawId: string): number {
     const id = Number(rawId);
     if (!/^[1-9]\d*$/.test(rawId) || !Number.isSafeInteger(id)) {
@@ -29,7 +27,6 @@ function parseId(rawId: string): number {
     return id;
 }
 
-// Vérifie les données réellement reçues (les types TypeScript n'existent plus à l'exécution).
 function validateGameInput(body: unknown): CreateGameInput {
     if (typeof body !== 'object' || body === null || Array.isArray(body)) {
         throw new HttpError(400, 'Données invalides', ['Le corps de la requête doit être un objet JSON']);
@@ -46,39 +43,3 @@ function validateGameInput(body: unknown): CreateGameInput {
     }
     if (typeof data.genre !== 'string' || data.genre.trim() === '') {
         errors.push('Le genre est obligatoire');
-    }
-    if (
-        typeof data.releaseYear !== 'number' ||
-        !Number.isInteger(data.releaseYear) ||
-        data.releaseYear < 1950 ||
-        data.releaseYear > 2100
-    ) {
-        errors.push("L'année de sortie doit être un entier entre 1950 et 2100");
-    }
-    if (
-        typeof data.rating !== 'number' ||
-        !Number.isFinite(data.rating) ||
-        data.rating < 0 ||
-        data.rating > 10
-    ) {
-        errors.push('La note doit être comprise entre 0 et 10');
-    }
-
-    if (errors.length > 0) {
-        throw new HttpError(400, 'Données invalides', errors);
-    }
-
-    return {
-        title: (data.title as string).trim(),
-        editor: (data.editor as string).trim(),
-        releaseYear: data.releaseYear as number,
-        genre: (data.genre as string).trim(),
-        rating: data.rating as number,
-    };
-}
-
-export function getAllGames(): Game[] {
-    return gameRepository.findAll();
-}
-
-export function
