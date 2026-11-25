@@ -9,6 +9,7 @@ import {gameRoutes} from './routes/game.routes.js';
 import {HttpError} from './services/game.service.js';
 
 export const app = express();
+app.disable('x-powered-by');
 app.use(express.json());
 
 app.get('/', (_req, res) => {

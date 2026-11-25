@@ -28,6 +28,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Erreur interne du serveur
     post:
       summary: Ajouter un jeu
       description: Valide les données envoyées puis enregistre un nouveau jeu.
@@ -50,12 +52,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Données invalides
+                details:
+                  - Le titre est obligatoire
+                  - La note doit être comprise entre 0 et 10
         '500':
           description: Erreur interne du serveur.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Erreur interne du serveur
 
   /api/games/{id}:
     parameters:
@@ -82,18 +91,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Identifiant invalide
+                details:
+                  - L'identifiant doit être un entier strictement positif
         '404':
           description: Jeu introuvable.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Jeu introuvable
         '500':
           description: Erreur interne du serveur.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Erreur interne du serveur
     put:
       summary: Modifier un jeu
       description: Remplace toutes les informations du jeu. Tous les champs doivent être envoyés.
@@ -116,18 +133,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Données invalides
+                details:
+                  - Le titre est obligatoire
+                  - La note doit être comprise entre 0 et 10
         '404':
           description: Jeu introuvable.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Jeu introuvable
         '500':
           description: Erreur interne du serveur.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Erreur interne du serveur
     delete:
       summary: Supprimer un jeu
       description: Supprime définitivement le jeu.
@@ -140,18 +166,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Identifiant invalide
+                details:
+                  - L'identifiant doit être un entier strictement positif
         '404':
           description: Jeu introuvable.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Jeu introuvable
         '500':
           description: Erreur interne du serveur.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: Erreur interne du serveur
 
 components:
   schemas:
@@ -211,11 +245,7 @@ components:
       properties:
         error:
           type: string
-          example: Données invalides
         details:
           type: array
           items:
             type: string
-          example:
-            - Le titre est obligatoire
-            - La note doit être comprise entre 0 et 10
