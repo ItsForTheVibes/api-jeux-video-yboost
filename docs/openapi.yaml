@@ -1,0 +1,221 @@
+openapi: 3.0.3
+
+info:
+  title: API Jeux Vidéo
+  version: 1.0.0
+  description: API de gestion d'une collection de jeux vidéo.
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /api/games:
+    get:
+      summary: Récupérer tous les jeux
+      description: Renvoie la liste de tous les jeux, ou un tableau vide si la collection est vide.
+      responses:
+        '200':
+          description: Liste des jeux récupérée avec succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+        '500':
+          description: Erreur interne du serveur.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Ajouter un jeu
+      description: Valide les données envoyées puis enregistre un nouveau jeu.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGameInput'
+      responses:
+        '201':
+          description: Jeu créé.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          description: Données invalides ou JSON mal formé.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur interne du serveur.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/games/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Identifiant du jeu (entier strictement positif).
+        schema:
+          type: integer
+          minimum: 1
+    get:
+      summary: Récupérer un jeu
+      description: Renvoie le jeu correspondant à l'identifiant.
+      responses:
+        '200':
+          description: Jeu trouvé.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          description: Identifiant invalide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Jeu introuvable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur interne du serveur.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Modifier un jeu
+      description: Remplace toutes les informations du jeu. Tous les champs doivent être envoyés.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGameInput'
+      responses:
+        '200':
+          description: Jeu modifié.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '400':
+          description: Identifiant ou données invalides.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Jeu introuvable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur interne du serveur.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Supprimer un jeu
+      description: Supprime définitivement le jeu.
+      responses:
+        '204':
+          description: Jeu supprimé.
+        '400':
+          description: Identifiant invalide.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Jeu introuvable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Erreur interne du serveur.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Game:
+      type: object
+      required: [id, title, editor, releaseYear, genre, rating]
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Disco Elysium
+        editor:
+          type: string
+          example: ZA/UM
+        releaseYear:
+          type: integer
+          example: 2019
+        genre:
+          type: string
+          example: Role Playing Game
+        rating:
+          type: number
+          example: 9.7
+
+    CreateGameInput:
+      type: object
+      required: [title, editor, releaseYear, genre, rating]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          example: Half Life 2
+        editor:
+          type: string
+          minLength: 1
+          example: Valve
+        releaseYear:
+          type: integer
+          minimum: 1950
+          maximum: 2100
+          example: 2004
+        genre:
+          type: string
+          minLength: 1
+          example: First Person Shooter
+        rating:
+          type: number
+          minimum: 0
+          maximum: 10
+          example: 9.6
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Données invalides
+        details:
+          type: array
+          items:
+            type: string
+          example:
+            - Le titre est obligatoire
+            - La note doit être comprise entre 0 et 10
